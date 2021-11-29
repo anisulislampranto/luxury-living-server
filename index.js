@@ -25,6 +25,7 @@ client.connect(err => {
   console.log(err)
   const projectsCollection = client.db("luxuryApartment").collection("projects");
   const reviewCollection = client.db("luxuryApartment").collection("review");
+  const servicesCollection = client.db("luxuryApartment").collection("services");
   
 
   app.post('/addProject', async (req, res) => {
@@ -66,6 +67,32 @@ client.connect(err => {
 
 app.get('/reviews', (req, res) => {
   reviewCollection.find({})
+  .toArray((err, documents)=>{
+    res.send(documents)
+  })
+})
+
+app.post('/addServices', async (req, res) => {
+  const title = req.body.title;
+  const description = req.body.description;
+  const price = req.body.price;
+  const pic = req.files.icon;
+  const picData = pic.data;
+  const encodedPic = picData.toString('base64');
+  const imageBuffer = Buffer.from(encodedPic, 'base64');
+  const project = {
+    title,
+    description,
+    price,
+    image: imageBuffer
+}
+
+const result = await servicesCollection.insertOne(project);
+res.json(result);
+})
+
+app.get('/services', (req, res) => {
+  servicesCollection.find({})
   .toArray((err, documents)=>{
     res.send(documents)
   })
