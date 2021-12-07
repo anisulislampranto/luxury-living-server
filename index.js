@@ -2,8 +2,11 @@ const express = require('express');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
+const { ObjectId } = require('bson');
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.9uobc.mongodb.net/${ process.env.DB_NAME}?retryWrites=true&w=majority`;
+
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.9uobc.mongodb.net/${ process.env.DB_NAME}?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://adminPanel:test12345@cluster0.9uobc.mongodb.net/luxuryApartment?retryWrites=true&w=majority`;
 
 
 const app = express();
@@ -26,6 +29,7 @@ client.connect(err => {
   const projectsCollection = client.db("luxuryApartment").collection("projects");
   const reviewCollection = client.db("luxuryApartment").collection("review");
   const servicesCollection = client.db("luxuryApartment").collection("services");
+  const bookingsCollection = client.db("luxuryApartment").collection("bookings");
   
 
   app.post('/addProject', async (req, res) => {
@@ -96,6 +100,31 @@ app.get('/services', (req, res) => {
   .toArray((err, documents)=>{
     res.send(documents)
   })
+})
+
+app.get('/service/:serviceId',(req, res)=>{
+  servicesCollection.find({_id: ObjectId(req.params.serviceId)})
+  .toArray((err, documents) => {
+    console.log(err)
+    console.log(documents);
+    res.send(documents[0])
+  })
+})
+
+app.post('/addBooking', async (req, res) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const serviceName = req.body.serviceName;
+  const date = req.body.date;
+
+  const bookingInfo = {
+    name, 
+    email, 
+    serviceName, 
+    date
+  }
+  const result = await bookingsCollection.insertOne(bookingInfo);
+  res.json(result);
 })
 
 
