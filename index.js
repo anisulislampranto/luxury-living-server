@@ -30,6 +30,7 @@ client.connect(err => {
   const reviewCollection = client.db("luxuryApartment").collection("review");
   const servicesCollection = client.db("luxuryApartment").collection("services");
   const bookingsCollection = client.db("luxuryApartment").collection("bookings");
+  const adminsCollection = client.db("luxuryApartment").collection("admin");
   
 
   app.post('/addProject', async (req, res) => {
@@ -105,8 +106,6 @@ app.get('/services', (req, res) => {
 app.get('/service/:serviceId',(req, res)=>{
   servicesCollection.find({_id: ObjectId(req.params.serviceId)})
   .toArray((err, documents) => {
-    console.log(err)
-    console.log(documents);
     res.send(documents[0])
   })
 })
@@ -115,12 +114,14 @@ app.post('/addBooking', async (req, res) => {
   const name = req.body.name;
   const email = req.body.email;
   const serviceName = req.body.serviceName;
+  const servicePrice = req.body.servicePrice;
   const date = req.body.date;
 
   const bookingInfo = {
     name, 
     email, 
     serviceName, 
+    servicePrice,
     date
   }
   const result = await bookingsCollection.insertOne(bookingInfo);
