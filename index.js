@@ -25,14 +25,14 @@ app.get('/', (req, res) => {
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
-  console.log(err)
+  console.log('database Error',err)
   const projectsCollection = client.db("luxuryApartment").collection("projects");
   const reviewCollection = client.db("luxuryApartment").collection("review");
   const servicesCollection = client.db("luxuryApartment").collection("services");
   const bookingsCollection = client.db("luxuryApartment").collection("bookings");
   const adminsCollection = client.db("luxuryApartment").collection("admin");
   
-
+  // add project to DB 
   app.post('/addProject', async (req, res) => {
     const name = req.body.name;
     const location = req.body.location;
@@ -49,7 +49,7 @@ client.connect(err => {
   const result = await projectsCollection.insertOne(project);
   res.json(result);
   })
-
+  // get project from DB
   app.get('/projects',(req, res) => {
     projectsCollection.find({})
     .toArray((err, documents) =>{
@@ -57,8 +57,7 @@ client.connect(err => {
     })
   })
 
-
-
+  // add client review to DB 
   app.post('/addReview', async (req, res) => {
     const name = req.body.name;
     const review = req.body.review;
@@ -70,6 +69,7 @@ client.connect(err => {
     res.json(result)  
 })
 
+// get Client reviews from DB
 app.get('/reviews', (req, res) => {
   reviewCollection.find({})
   .toArray((err, documents)=>{
@@ -77,6 +77,7 @@ app.get('/reviews', (req, res) => {
   })
 })
 
+// add service to DB
 app.post('/addServices', async (req, res) => {
   const title = req.body.title;
   const description = req.body.description;
@@ -96,13 +97,14 @@ const result = await servicesCollection.insertOne(project);
 res.json(result);
 })
 
+// get existing services from DB 
 app.get('/services', (req, res) => {
   servicesCollection.find({})
   .toArray((err, documents)=>{
     res.send(documents)
   })
 })
-
+// get single service by id from DB
 app.get('/service/:serviceId',(req, res)=>{
   servicesCollection.find({_id: ObjectId(req.params.serviceId)})
   .toArray((err, documents) => {
@@ -110,6 +112,16 @@ app.get('/service/:serviceId',(req, res)=>{
   })
 })
 
+// delete single service from DB by id
+app.delete('/deleteService/:id', (req, res)=> {
+  servicesCollection.deleteOne({_id: ObjectId(req.params.id)})
+  .then((err, results)=> {
+    console.log('delete method error', err);
+    res.send(results)
+  })
+})
+
+// add Booking info to DB
 app.post('/addBooking', async (req, res) => {
   const name = req.body.name;
   const email = req.body.email;
@@ -127,7 +139,7 @@ app.post('/addBooking', async (req, res) => {
   const result = await bookingsCollection.insertOne(bookingInfo);
   res.json(result);
 })
-
+// add Admin info to DB
 app.post('/addAdmin', async(req, res)=> {
   const adminEmail = req.body.adminEmail;
   const adminName = req.body.adminName;
@@ -139,7 +151,7 @@ app.post('/addAdmin', async(req, res)=> {
   res.json(result);
 
 })
-
+// get Admin info from DB
 app.get('/adminPanel', (req, res)=> {
   adminsCollection.find({})
   .toArray((err, documents)=>{
