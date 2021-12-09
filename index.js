@@ -128,6 +128,25 @@ app.post('/addBooking', async (req, res) => {
   res.json(result);
 })
 
+app.post('/addAdmin', async(req, res)=> {
+  const adminEmail = req.body.adminEmail;
+  const adminName = req.body.adminName;
+  const adminInfo = {
+    adminEmail, 
+    adminName
+  }
+  const result = await adminsCollection.insertOne(adminInfo);
+  res.json(result);
+
+})
+
+app.get('/adminPanel', (req, res)=> {
+  adminsCollection.find({})
+  .toArray((err, documents)=>{
+    res.send(documents)
+  }) 
+})
+
 
 });
 
