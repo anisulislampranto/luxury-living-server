@@ -120,6 +120,16 @@ app.delete('/deleteService/:id', (req, res)=> {
     res.send(results)
   })
 })
+// update service  
+app.patch('/updateService/:id', (req, res)=>{
+  servicesCollection.updateOne({_id: ObjectId(req.params.id)},
+  {
+    $set: {title: req.body.title, description: req.body.description, price: req.body.price, image: req.body.icon}
+  }).then(result=> {
+    console.log(result);
+  })
+
+})
 
 // add Booking info to DB
 app.post('/addBooking', async (req, res) => {
