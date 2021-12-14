@@ -31,6 +31,8 @@ client.connect(err => {
   const servicesCollection = client.db("luxuryApartment").collection("services");
   const bookingsCollection = client.db("luxuryApartment").collection("bookings");
   const adminsCollection = client.db("luxuryApartment").collection("admin");
+  const confirmedOrdersCollection = client.db("luxuryApartment").collection("confirmedOrders");
+  const conpletedOrdersCollection = client.db("luxuryApartment").collection("completedOrders");
   
   // add project to DB 
   app.post('/addProject', async (req, res) => {
@@ -108,7 +110,7 @@ app.get('/services', (req, res) => {
 app.get('/service/:serviceId',(req, res)=>{
   servicesCollection.find({_id: ObjectId(req.params.serviceId)})
   .toArray((err, documents) => {
-    res.send(documents[0])
+    res.send(documents);
   })
 })
 
@@ -116,7 +118,7 @@ app.get('/service/:serviceId',(req, res)=>{
 app.delete('/deleteService/:id', (req, res)=> {
   servicesCollection.deleteOne({_id: ObjectId(req.params.id)})
   .then((err, results)=> {
-    console.log('delete method error', err);
+    // console.log('delete method error', err);
     res.send(results)
   })
 })
@@ -126,29 +128,49 @@ app.patch('/updateService/:id', (req, res)=>{
   {
     $set: {title: req.body.title, description: req.body.description, price: req.body.price, image: req.body.icon}
   }).then(result=> {
-    console.log(result);
+    // console.log(result);
   })
 
 })
 
 // add Booking info to DB
 app.post('/addBooking', async (req, res) => {
+  console.log(req.body);
   const name = req.body.name;
   const email = req.body.email;
   const serviceName = req.body.serviceName;
   const servicePrice = req.body.servicePrice;
   const date = req.body.date;
+  const pic = req.body.icon;
 
   const bookingInfo = {
     name, 
     email, 
     serviceName, 
     servicePrice,
-    date
+    date,
+    image: pic
   }
   const result = await bookingsCollection.insertOne(bookingInfo);
   res.json(result);
 })
+// get bookings from DB 
+app.get('/bookings', (req, res) => {
+  bookingsCollection.find({})
+  .toArray((err, documents) =>{
+    res.send(documents);
+  })
+})
+
+// get single bookings info by id from DB
+app.get('/booking/:id', (req, res) => {
+  bookingsCollection.find({_id: ObjectId(req.params.id)})
+  .toArray((err, document) =>{
+    res.send(document);
+  })
+})
+
+
 // add Admin info to DB
 app.post('/addAdmin', async(req, res)=> {
   const adminEmail = req.body.adminEmail;
@@ -167,6 +189,50 @@ app.get('/adminPanel', (req, res)=> {
   .toArray((err, documents)=>{
     res.send(documents)
   }) 
+})
+
+// add confirmed order to DB 
+app.post('/addConfirmedOrder', async (req, res) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const servicePrice = req.body.servicePrice;
+  const serviceName = req.body.serviceName;
+  const date = req.body.date;
+  const id = req.body.id;
+
+  const confirmedOrderData = {
+    name, 
+    email, 
+    serviceName,
+    servicePrice,
+    date,
+    id
+  }
+  const result = await confirmedOrdersCollection.insertOne(confirmedOrderData);
+  res.json(result);
+})
+
+
+// add completed order to Db
+app.post('/addCompletedOrder', async (req, res) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const servicePrice = req.body.servicePrice;
+  const serviceName = req.body.serviceName;
+  const date = req.body.date;
+  const id = req.body.id;
+
+  const completedOrderData = {
+    name, 
+    email, 
+    serviceName,
+    servicePrice,
+    date,
+    id
+  }
+
+  const result = await conpletedOrdersCollection.insertOne(completedOrderData);
+  res.json(result);
 })
 
 
