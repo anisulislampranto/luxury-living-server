@@ -135,7 +135,6 @@ app.patch('/updateService/:id', (req, res)=>{
 
 // add Booking info to DB
 app.post('/addBooking', async (req, res) => {
-  console.log(req.body);
   const name = req.body.name;
   const email = req.body.email;
   const serviceName = req.body.serviceName;
@@ -233,6 +232,22 @@ app.post('/addCompletedOrder', async (req, res) => {
 
   const result = await conpletedOrdersCollection.insertOne(completedOrderData);
   res.json(result);
+})
+
+// get Confirmed orders from DB
+app.get('confirmedOrders', (req, res) =>{
+  confirmedOrdersCollection.find({})
+  .toArray((err, documents) =>{
+    res.send(documents);
+  })
+})
+
+//get Completed Orders from DB
+app.get('completedOrders', (req,res)=>{
+  completedOrderData.find({})
+  .toArray((err, documents)=>{
+    res.send(documents);
+  })
 })
 
 
