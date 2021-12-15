@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(fileUpload());
 
 
-const port = process.env.port || 4040; 
+const port = process.env.PORT || 4040; 
 
 
 app.get('/', (req, res) => {
@@ -281,5 +281,5 @@ app.get('/completedOrders', (req,res)=>{
 
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${process.env.port}`)
+  console.log(`Example app listening at http://localhost:${port}`)
 })
