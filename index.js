@@ -210,6 +210,15 @@ app.post('/addConfirmedOrder', async (req, res) => {
   const result = await confirmedOrdersCollection.insertOne(confirmedOrderData);
   res.json(result);
 })
+// delete/Move Confirmed Orders by ID from ordersList DB folder
+app.delete('/deleteConfirmedOrder/:id', (req, res) =>{
+  console.log(req.params.id);
+  bookingsCollection.deleteOne({id: ObjectId(req.params.id)})
+  .then((err, result) => {
+    res.send(result);
+  })
+  
+})
 
 
 // add completed order to Db
@@ -233,9 +242,19 @@ app.post('/addCompletedOrder', async (req, res) => {
   const result = await conpletedOrdersCollection.insertOne(completedOrderData);
   res.json(result);
 })
+/////////////////////////////////////////////////////////////
+// delete/Move Completed Orders by ID from ordersList DB folder
+app.delete('/deleteCompletedOrder/:id', (req, res) => {
+  bookingsCollection.deleteOne({id: ObjectId(req.params.id)})
+  .then((err, result) => {
+    res.send(result);
+  })
+})
+
+
 
 // get Confirmed orders from DB
-app.get('confirmedOrders', (req, res) =>{
+app.get('/confirmedOrders', (req, res) =>{
   confirmedOrdersCollection.find({})
   .toArray((err, documents) =>{
     res.send(documents);
@@ -243,12 +262,14 @@ app.get('confirmedOrders', (req, res) =>{
 })
 
 //get Completed Orders from DB
-app.get('completedOrders', (req,res)=>{
-  completedOrderData.find({})
+app.get('/completedOrders', (req,res)=>{
+  conpletedOrdersCollection.find({})
   .toArray((err, documents)=>{
     res.send(documents);
   })
 })
+
+
 
 
 });
