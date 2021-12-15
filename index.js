@@ -9,6 +9,7 @@ const { ObjectId } = require('bson');
 const uri = `mongodb+srv://adminPanel:test12345@cluster0.9uobc.mongodb.net/luxuryApartment?retryWrites=true&w=majority`;
 
 
+
 const app = express();
 
 app.use(cors());
