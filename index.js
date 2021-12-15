@@ -5,8 +5,7 @@ const fileUpload = require('express-fileupload');
 const { ObjectId } = require('bson');
 
 
-// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.9uobc.mongodb.net/${ process.env.DB_NAME}?retryWrites=true&w=majority`;
-const uri = `mongodb+srv://adminPanel:test12345@cluster0.9uobc.mongodb.net/luxuryApartment?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.9uobc.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
 
 
@@ -85,7 +84,7 @@ app.post('/addServices', async (req, res) => {
   const title = req.body.title;
   const description = req.body.description;
   const price = req.body.price;
-  const pic = req.files.icon;
+  const pic = req.files.image;
   const picData = pic.data;
   const encodedPic = picData.toString('base64');
   const imageBuffer = Buffer.from(encodedPic, 'base64');
@@ -125,9 +124,10 @@ app.delete('/deleteService/:id', (req, res)=> {
 })
 // update service  
 app.patch('/updateService/:id', (req, res)=>{
+  console.log(req.body.image);
   servicesCollection.updateOne({_id: ObjectId(req.params.id)},
   {
-    $set: {title: req.body.title, description: req.body.description, price: req.body.price, image: req.body.icon}
+    $set: {title: req.body.title, description: req.body.description, price: req.body.price, image: req.body.image}
   }).then(result=> {
     // console.log(result);
   })
@@ -141,7 +141,7 @@ app.post('/addBooking', async (req, res) => {
   const serviceName = req.body.serviceName;
   const servicePrice = req.body.servicePrice;
   const date = req.body.date;
-  const pic = req.body.icon;
+  const pic = req.body.image;
 
   const bookingInfo = {
     name, 
@@ -211,6 +211,7 @@ app.post('/addConfirmedOrder', async (req, res) => {
   const result = await confirmedOrdersCollection.insertOne(confirmedOrderData);
   res.json(result);
 })
+
 // delete/Move Confirmed Orders by ID from ordersList DB folder
 app.delete('/deleteConfirmedOrder/:id', (req, res) =>{
   console.log(req.params.id);
@@ -219,6 +220,14 @@ app.delete('/deleteConfirmedOrder/:id', (req, res) =>{
     res.send(result);
   })
   
+})
+
+// get Confirmed orders from DB
+app.get('/confirmedOrders', (req, res) =>{
+  confirmedOrdersCollection.find({})
+  .toArray((err, documents) =>{
+    res.send(documents);
+  })
 })
 
 
@@ -243,22 +252,12 @@ app.post('/addCompletedOrder', async (req, res) => {
   const result = await conpletedOrdersCollection.insertOne(completedOrderData);
   res.json(result);
 })
-/////////////////////////////////////////////////////////////
+
 // delete/Move Completed Orders by ID from ordersList DB folder
 app.delete('/deleteCompletedOrder/:id', (req, res) => {
   bookingsCollection.deleteOne({id: ObjectId(req.params.id)})
   .then((err, result) => {
     res.send(result);
-  })
-})
-
-
-
-// get Confirmed orders from DB
-app.get('/confirmedOrders', (req, res) =>{
-  confirmedOrdersCollection.find({})
-  .toArray((err, documents) =>{
-    res.send(documents);
   })
 })
 
