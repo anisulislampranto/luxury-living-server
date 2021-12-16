@@ -253,13 +253,7 @@ app.get('/completedOrders', (req,res)=>{
   })
 })
 
-
-
-
 });
-
-
-
 
 
 app.listen(port, () => {
